@@ -3,8 +3,8 @@
 package dsptools.numbers
 
 import breeze.math.Complex
-import chisel3._
-import chisel3.experimental.FixedPoint
+import chisel3.{fromDoubleToLiteral => _, fromIntToBinaryPoint => _, _}
+import fixedpoint._
 import chisel3.iotesters.TesterOptionsManager
 import dsptools.DspTester
 import org.scalatest.freespec.AnyFreeSpec

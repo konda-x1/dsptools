@@ -2,16 +2,18 @@
 
 package SimpleTB
 
-import chisel3._
+import chisel3.{fromDoubleToLiteral => _, fromIntToBinaryPoint => _, _}
+import fixedpoint._
 import chisel3.util._
-import chisel3.internal.firrtl.{Width, BinaryPoint}
-import chisel3.experimental.FixedPoint
+import chisel3.internal.firrtl.Width
 import breeze.math.Complex
-import dsptools.{DspTester, DspTesterOptionsManager, DspTesterOptions}
+import dsptools.{DspTester, DspTesterOptions, DspTesterOptionsManager}
 import dsptools.numbers._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import chisel3.iotesters.TesterOptions
+
+import scala.reflect.ClassTag
 
 trait EasyPeekPoke {
 
@@ -79,14 +81,18 @@ case class TestParams(
 
 }
 
-class DataTypeBundle[R <: Data:Real](genType: R, dataWidth: Width, binaryPoint: BinaryPoint) extends Bundle {
+class DataTypeBundle[R <: Data : Real](genType: R, dataWidth: Width, binaryPoint: BinaryPoint)
+                                      (implicit val ct: ClassTag[DataTypeBundle[R]])
+  extends Bundle with ForceElementwiseConnect[DataTypeBundle[R]] {
   val gen = genType.cloneType
   val s = SInt(dataWidth)
   val f = FixedPoint(dataWidth, binaryPoint)
   val u = UInt(dataWidth)
 }
 
-class Interface[R <: Data:Real](genShort: R, genLong: R, includeR: Boolean, p: TestParams) extends Bundle {
+class Interface[R <: Data : Real](genShort: R, genLong: R, includeR: Boolean, p: TestParams)
+                                 (implicit val ct: ClassTag[DataTypeBundle[R]])
+  extends Bundle with ForceElementwiseConnect[DataTypeBundle[R]] {
 
   val smallW = p.smallW.W
   val bigW = p.bigW.W

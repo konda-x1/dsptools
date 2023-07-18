@@ -16,8 +16,7 @@ val commonSettings = Seq(
   version := "1.5-SNAPSHOT",
   git.remoteRepo := "git@github.com:ucb-bar/dsptools.git",
   autoAPIMappings := true,
-  scalaVersion := "2.12.14",
-  crossScalaVersions := Seq("2.13.6", "2.12.14"),
+  scalaVersion := "2.13.10",
   scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:reflectiveCalls"),
   javacOptions ++= Seq("-source", "1.8", "-target", "1.8"),
   pomExtra := (<url>http://chisel.eecs.berkeley.edu/</url>
@@ -85,7 +84,11 @@ publishMavenStyle := true
 publishArtifact in Test := false
 pomIncludeRepository := { x => false }
 
+lazy val fixedpoint = (project in file("./fixedpoint"))
+  .settings(commonSettings)
+
 val dsptools = (project in file("."))
+  .dependsOn(fixedpoint)
   //.enablePlugins(BuildInfoPlugin)
   .enablePlugins(ScalaUnidocPlugin)
   .settings(commonSettings: _*)

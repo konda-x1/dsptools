@@ -2,13 +2,27 @@
 
 package dsptools.numbers
 
-import chisel3._
-import chisel3.experimental.FixedPoint
+import chisel3.{fromDoubleToLiteral => _, fromIntToBinaryPoint => _, _}
+import fixedpoint._
 import chisel3.iotesters._
 import dsptools.numbers.rounding.Saturate
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
+object Implicits {
+  implicit class BinaryPointExtensions(bp: BinaryPoint) {
+    def asChiselBinaryPoint: chisel3.internal.firrtl.BinaryPoint = bp match {
+      case UnknownBinaryPoint => chisel3.internal.firrtl.UnknownBinaryPoint
+      case KnownBinaryPoint(value) => chisel3.internal.firrtl.KnownBinaryPoint(value)
+    }
+  }
+  implicit class FixedPointExtensions(fp: FixedPoint) {
+    def asChiselFixedPoint: chisel3.experimental.FixedPoint =
+      fp.asSInt.asFixedPoint(fp.binaryPoint.asChiselBinaryPoint)
+  }
+}
+
+import Implicits._
 
 class SaturateUIntMod(val add: Boolean) extends Module {
   val a = IO(Input(UInt(8.W)))
@@ -132,9 +146,9 @@ class SaturateFixedPointTester(dut: SaturateFixedPointMod) extends PeekPokeTeste
   val astep = pow(2.0, -aBP)
   val bstep = pow(2.0, -bBP)
   for (i <- (BigDecimal(-128 * astep) until 128 * astep by astep).map(_.toDouble)) {
-    pokeFixedPoint(dut.a, i)
+    pokeFixedPoint(dut.a.asChiselFixedPoint, i)
     for (j <- (BigDecimal(-128 * bstep) until 128 * bstep by bstep).map(_.toDouble)) {
-      pokeFixedPoint(dut.b, j)
+      pokeFixedPoint(dut.b.asChiselFixedPoint, j)
       val expRes = if (dut.add) {
         i + j
       } else {

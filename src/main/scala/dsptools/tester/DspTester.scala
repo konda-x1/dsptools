@@ -3,9 +3,8 @@
 package dsptools
 
 import breeze.math.Complex
-import chisel3._
-import chisel3.experimental.FixedPoint
-import chisel3.internal.firrtl.KnownBinaryPoint
+import chisel3.{fromDoubleToLiteral => _, fromIntToBinaryPoint => _, _}
+import fixedpoint._
 import chisel3.iotesters.{PeekPokeTester, Pokeable}
 import dsptools.DspTesterUtilities._
 import dsptools.numbers.{DspComplex, DspReal}
@@ -166,7 +165,7 @@ class DspTester[+T <: MultiIOModule](
       signal match {
         case f: FixedPoint =>
           f.binaryPoint match {
-            case KnownBinaryPoint(bp) => poke(f.asInstanceOf[Bits], FixedPoint.toBigInt(value, bp))
+            case KnownBinaryPoint(bp) => poke(f.asSInt.asInstanceOf[Bits], FixedPoint.toBigInt(value, bp))
             case _ => throw DspException("Must poke FixedPoint with known binary point")
           }
         case r: DspReal => poke(r.node.asInstanceOf[Bits], DspTesterUtilities.doubleToBigIntBits(value))
@@ -199,6 +198,7 @@ class DspTester[+T <: MultiIOModule](
         // Unsigned bigint
         case r: DspReal => peek(r.node.asInstanceOf[Bits])
         case b: Bits => peek(b.asInstanceOf[Bits])
+        case f: FixedPoint => peek(f.asSInt.asInstanceOf[Bits])
       }
     }
     val (dblOut, bigIntOut) = node match {

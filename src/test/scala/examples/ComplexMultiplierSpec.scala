@@ -2,8 +2,8 @@
 
 package examples
 
-import chisel3._
-import chisel3.experimental.FixedPoint
+import chisel3.{fromDoubleToLiteral => _, fromIntToBinaryPoint => _, _}
+import fixedpoint._
 import chisel3.iotesters.Backend
 import chisel3.{Bundle, Module}
 import dsptools.{DspContext, DspTester}

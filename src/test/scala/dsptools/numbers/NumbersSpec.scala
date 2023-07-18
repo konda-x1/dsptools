@@ -2,9 +2,9 @@
 
 package dsptools.numbers
 
-import chisel3._
+import chisel3.{fromDoubleToLiteral => _, fromIntToBinaryPoint => _, _}
+import fixedpoint._
 import dsptools._
-import chisel3.experimental.FixedPoint
 import dsptools.numbers.implicits._
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers

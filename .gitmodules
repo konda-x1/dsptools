@@ -1,0 +1,4 @@
+[submodule "fixedpoint"]
+	path = fixedpoint
+	url = https://github.com/konda-x1/fixedpoint.git
+	branch = milovanovic

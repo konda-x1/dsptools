@@ -2,11 +2,10 @@
 
 package dsptools
 
-import chisel3._
-import chisel3.experimental.FixedPoint
+import chisel3.{fromDoubleToLiteral => _, fromIntToBinaryPoint => _, _}
+import fixedpoint._
 import dsptools.numbers.{DspComplex, DspReal}
 import chisel3.internal.InstanceId
-import chisel3.internal.firrtl.KnownBinaryPoint
 
 // TODO: Get rid of
 import chisel3.iotesters.TestersCompatibility

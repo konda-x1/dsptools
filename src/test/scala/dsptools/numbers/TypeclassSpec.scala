@@ -2,8 +2,8 @@
 
 package dsptools.numbers
 
-import chisel3._
-import chisel3.experimental.FixedPoint
+import chisel3.{fromDoubleToLiteral => _, fromIntToBinaryPoint => _, _}
+import fixedpoint._
 import chisel3.iotesters._
 import dsptools._
 import dsptools.numbers._
@@ -36,7 +36,7 @@ object RingFunc {
 class RingModule[T <: Data : Ring](gen: T) extends FuncModule(gen, {in: T => RingFunc(in)})
 
 object EqFunc {
-  def apply[T <: Data : Eq : Ring](in: T): T = Mux(Eq[T].eqv(in, Ring[T].zero), Ring[T].one, in)
+  def apply[T <: Data : Eq : Ring](in: T): T = shadow.Mux(Eq[T].eqv(in, Ring[T].zero), Ring[T].one, in)
 }
 class EqModule[T <: Data : Eq : Ring](gen: T) extends FuncModule(gen, {in: T => EqFunc(in)})
 
@@ -54,13 +54,13 @@ class OrderModule[T <: Data : Order](gen: T) extends FuncModule(gen, {in: T => O
 
 object PartialOrderFunc {
   def apply[T <: Data : PartialOrder](in: T): T =
-    Mux(PartialOrder[T].partialCompare(in, in).bits.eq, in, in)
+    shadow.Mux(PartialOrder[T].partialCompare(in, in).bits.eq, in, in)
 }
 class PartialOrderModule[T <: Data : PartialOrder : Ring](gen: T) extends FuncModule(
   gen, {in: T => PartialOrderFunc(in)})
 
 class SignedModule[T <: Data : Signed](gen: T) extends FuncModule(
-  gen, {in: T => Mux(Signed[T].sign(in).neg, Signed[T].abs(in), Mux(Signed[T].sign(in).zero, in, in)) }
+  gen, {in: T => shadow.Mux(Signed[T].sign(in).neg, Signed[T].abs(in), shadow.Mux(Signed[T].sign(in).zero, in, in)) }
 )
 
 class BinaryRepresentationModule[T <: Data : BinaryRepresentation](gen: T) extends FuncModule(

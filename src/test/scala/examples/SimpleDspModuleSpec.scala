@@ -3,9 +3,9 @@
 package SimpleDsp
 
 // Allows you to use Chisel Module, Bundle, etc.
-import chisel3._
+import chisel3.{fromDoubleToLiteral => _, fromIntToBinaryPoint => _, _}
 // Allows you to use FixedPoint
-import chisel3.experimental.FixedPoint
+import fixedpoint._
 // If you want to take advantage of type classes >> Data:RealBits (i.e. pass in FixedPoint or DspReal)
 import dsptools.numbers._
 // Enables you to set DspContext's for things like overflow behavior, rounding modes, etc.
